@@ -1,15 +1,25 @@
+
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+
 namespace backend.Models 
 {
     public class Player {
         
         [Key]
         [ForeignKey("User")]
-        public int UserId {get; set;}
-        public string FirstName {get; set;}
-        public string LastName {get; set;}
+        public Guid UserId {get; set;}
 
+        [Required]
+        [StringLength(30)]
+        public string FirstName {get; set;}
+        
+        [Required]
+        [StringLength(30)]
+        public string LastName {get; set;}
+        
+        [Required]
         public string Gender {get; set;}
     }
 }

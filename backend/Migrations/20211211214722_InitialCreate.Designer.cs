@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using backend.Models;
+using backend.DAL;
 
 namespace backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20211211153227_InitialCreate")]
+    [Migration("20211211214722_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,11 +23,11 @@ namespace backend.Migrations
 
             modelBuilder.Entity("FrontManVIP", b =>
                 {
-                    b.Property<int>("FrontMenId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("FrontMenId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("VIPsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VIPsId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("FrontMenId", "VIPsId");
 
@@ -38,10 +38,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.FrontMan", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
@@ -59,83 +58,95 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Guard", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("type")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Guard");
+                    b.ToTable("Guards");
                 });
 
             modelBuilder.Entity("backend.Models.Player", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Gender")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Player");
+                    b.ToTable("Players");
                 });
 
-            modelBuilder.Entity("backend.Models.Task", b =>
+            modelBuilder.Entity("backend.Models.Todo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Todos");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FrontManId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("FrontManId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialIdentificationNo")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("alive");
 
                     b.HasKey("Id");
 
@@ -146,10 +157,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.VIP", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
@@ -198,10 +208,10 @@ namespace backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("backend.Models.Task", b =>
+            modelBuilder.Entity("backend.Models.Todo", b =>
                 {
                     b.HasOne("backend.Models.User", "User")
-                        .WithMany("Tasks")
+                        .WithMany("Todos")
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
@@ -211,7 +221,9 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.FrontMan", null)
                         .WithMany("Users")
-                        .HasForeignKey("FrontManId");
+                        .HasForeignKey("FrontManId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("backend.Models.FrontMan", b =>
@@ -225,7 +237,7 @@ namespace backend.Migrations
 
                     b.Navigation("PlayerData");
 
-                    b.Navigation("Tasks");
+                    b.Navigation("Todos");
                 });
 #pragma warning restore 612, 618
         }

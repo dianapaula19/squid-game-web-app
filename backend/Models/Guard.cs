@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,8 +8,8 @@ namespace backend.Models
 
         [Key]
         [ForeignKey("User")]
-        public int UserId {get; set;}
-        public string type {get; set;}
+        public Guid UserId {get; set;}
+        public string Type {get; set;}
 
     }
 }
