@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "1PW8QViet0nCcDDrBxKoouJwRVaO8jK3MhZvmNrtv9gpQA08kLnnyQEcgXVwljx4JL5V13DIRGHIjzmUs4jTvg==",
+  "success": true,
+  "projectFilePath": "/home/dianapaula19/academia/courses/daw-course/squid-game-web-app/backend/backend.csproj",
+  "expectedPackageFiles": [
+    "/home/dianapaula19/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "/home/dianapaula19/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/home/dianapaula19/.nuget/packages/swashbuckle.aspnetcore/5.6.3/swashbuckle.aspnetcore.5.6.3.nupkg.sha512",
+    "/home/dianapaula19/.nuget/packages/swashbuckle.aspnetcore.swagger/5.6.3/swashbuckle.aspnetcore.swagger.5.6.3.nupkg.sha512",
+    "/home/dianapaula19/.nuget/packages/swashbuckle.aspnetcore.swaggergen/5.6.3/swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",
+    "/home/dianapaula19/.nuget/packages/swashbuckle.aspnetcore.swaggerui/5.6.3/swashbuckle.aspnetcore.swaggerui.5.6.3.nupkg.sha512"
+  ],
+  "logs": []
+}
