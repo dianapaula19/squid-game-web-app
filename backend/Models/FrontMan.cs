@@ -15,8 +15,6 @@ namespace backend.Models
 
         public string Country {get; set;}
 
-        public ICollection<User> Users {get; set;}
-
         public ICollection<VIP> VIPs {get; set;}
     }
 

@@ -27,7 +27,7 @@ namespace backend.Core.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Repo} All method error", typeof(UserRepository));
+                _logger.LogError(ex, "{Repo} All method error", typeof(VIPRepository));
                 return new List<VIP>();
             }
 
@@ -49,7 +49,7 @@ namespace backend.Core.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Repo} Delete method error", typeof(UserRepository));
+                _logger.LogError(ex, "{Repo} Delete method error", typeof(VIPRepository));
                 return false;
             }
         }

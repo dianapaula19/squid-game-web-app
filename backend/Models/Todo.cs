@@ -14,6 +14,5 @@ namespace backend.Models {
         [Required]
         public DateTime Deadline {get; set;}
         
-        public User User {get; set;}
     }
 }

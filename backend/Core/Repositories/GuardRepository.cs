@@ -49,7 +49,7 @@ namespace backend.Core.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Repo} Delete method error", typeof(UserRepository));
+                _logger.LogError(ex, "{Repo} Delete method error", typeof(GuardRepository));
                 return false;
             }
         }

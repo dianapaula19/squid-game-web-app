@@ -27,7 +27,7 @@ namespace backend.Core.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Repo} All method error", typeof(UserRepository));
+                _logger.LogError(ex, "{Repo} All method error", typeof(PlayerRepository));
                 return new List<Player>();
             }
 
@@ -49,7 +49,7 @@ namespace backend.Core.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Repo} Delete method error", typeof(UserRepository));
+                _logger.LogError(ex, "{Repo} Delete method error", typeof(PlayerRepository));
                 return false;
             }
         }
