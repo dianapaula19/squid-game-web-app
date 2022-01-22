@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Models 
 {
     public class VIP 
-    {
+    {   
+        [Key]
         public Guid Id {get; set;}
         
         [EmailAddress]
@@ -15,6 +16,6 @@ namespace backend.Models
 
         public string Mask {get; set;}
 
-        public ICollection<FrontMan> FrontMen {get; set;}
+        public ICollection<ApplicationUserVIP> ApplicationUserVIPs {get; set;}
     }
 }

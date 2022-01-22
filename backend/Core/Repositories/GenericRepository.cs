@@ -40,6 +40,11 @@ namespace backend.Core.Repositories
             return true;
         }
 
+        public virtual Task<bool> Update(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual Task<bool> Delete(Guid id)
         {
             throw new NotImplementedException();

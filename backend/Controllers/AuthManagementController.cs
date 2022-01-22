@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System;
+using backend.Models;
 
 namespace backend.Controllers
 {
@@ -18,11 +19,11 @@ namespace backend.Controllers
     [ApiController]
     public class AuthManagementController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtConfig _jwtConfig;
 
         public AuthManagementController(
-            UserManager<IdentityUser> userManager, 
+            UserManager<ApplicationUser> userManager, 
             IOptionsMonitor<JwtConfig> optionsMonitor)
         {
             _userManager = userManager;
@@ -47,7 +48,7 @@ namespace backend.Controllers
                     });
                 }
 
-                var newUser = new IdentityUser() {
+                var newUser = new ApplicationUser() {
                     Email = user.Email,
                     UserName = user.Username
                 };
@@ -77,34 +78,6 @@ namespace backend.Controllers
                     },
                     Success = false
             });
-        }
-
-        private string GenerateJwtToken(IdentityUser user)
-        {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new []
-                {
-                    new Claim("Id", user.Id),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(6),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-
-            var jwtToken = jwtTokenHandler.WriteToken(token);
-
-            return jwtToken;
-
-
         }
 
         [HttpPost]
@@ -145,7 +118,7 @@ namespace backend.Controllers
                     Token = jwtToken
                 });
             }
-            
+
             return BadRequest(new RegistrationResponse(){
                     Errors = new List<string>(){
                         "Invalid credentials"
@@ -153,6 +126,35 @@ namespace backend.Controllers
                     Success = false
             });
         }
+
+        private string GenerateJwtToken(IdentityUser user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new []
+                {
+                    new Claim("Id", user.Id),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(6),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+
+            var jwtToken = jwtTokenHandler.WriteToken(token);
+
+            return jwtToken;
+
+
+        }
+
     }
 
 }

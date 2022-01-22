@@ -33,6 +33,27 @@ namespace backend.Core.Repositories
 
         }
 
+        public override async Task<bool> Update(VIP vip)
+        {
+            try
+            {
+                var result = await _dbSet.Where(x => x.Id == vip.Id).FirstOrDefaultAsync();
+                
+                if(result == null) 
+                {  
+                    return false;
+                }
+
+                _context.Entry(result).CurrentValues.SetValues(vip);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{Repo} Update method error", typeof(VIPRepository));
+                return false;
+            }
+        }
+
         public override async Task<bool> Delete(Guid id)
         {
             try

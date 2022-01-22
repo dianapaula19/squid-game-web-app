@@ -26,6 +26,15 @@ namespace backend.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTodos()
+        {
+            var todos = await _unitOfWork.Todos.All();
+            if (todos == null) 
+                return NotFound();
+            return Ok(todos);
+        }
+
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateTodo(Todo todo)
@@ -42,8 +51,23 @@ namespace backend.Controllers
             return new JsonResult("Something went wrong") {StatusCode = 500};
         }
 
+        [HttpPut]
+        [Route("Update")]
+        public async Task<IActionResult> UpdateTodo(Todo todo)
+        {
+            if (ModelState.IsValid)
+            {
+                await _unitOfWork.Todos.Update(todo);
+                await _unitOfWork.CompleteAsync();
+
+                return Ok(todo);
+            }
+            return new JsonResult("Something went wrong") {StatusCode = 500};
+            
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetItem(Guid id)
+        public async Task<IActionResult> GetTodoById(Guid id)
         {
             var todo = await _unitOfWork.Todos.GetById(id);
 

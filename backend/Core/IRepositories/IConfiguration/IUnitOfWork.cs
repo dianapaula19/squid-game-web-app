@@ -4,7 +4,6 @@ namespace backend.Core.IConfiguration
 {
     public interface IUnitOfWork
     {
-        IFrontManRepository FrontMen {get;}
         ITodoRepository Todos {get;}
         IVIPRepository VIPS {get;}
         IPlayerRepository Players {get;}

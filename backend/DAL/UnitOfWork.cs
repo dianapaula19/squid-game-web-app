@@ -13,7 +13,6 @@ namespace backend.DAL
         private readonly DatabaseContext _context;
         private readonly ILogger _logger;
 
-        public IFrontManRepository FrontMen {get; set;}
         public ITodoRepository Todos {get; set;}
         public IVIPRepository VIPS {get; set;}
         public IPlayerRepository Players {get; set;}
@@ -26,7 +25,6 @@ namespace backend.DAL
         {
             _context = context;
             _logger = loggerFactory.CreateLogger("logs");
-            FrontMen = new FrontManRepository(_context, _logger);
             Todos = new TodoRepository(_context, _logger);
             VIPS = new VIPRepository(_context, _logger);
             Players = new PlayerRepository(_context, _logger);

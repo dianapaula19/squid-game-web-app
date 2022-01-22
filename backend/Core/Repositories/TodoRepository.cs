@@ -33,6 +33,27 @@ namespace backend.Core.Repositories
 
         }
 
+        public override async Task<bool> Update(Todo todo)
+        {
+            try
+            {
+                var result = await _dbSet.Where(x => x.Id == todo.Id).FirstOrDefaultAsync();
+                
+                if(result == null) 
+                {  
+                    return false;
+                }
+
+                _context.Entry(result).CurrentValues.SetValues(todo);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{Repo} Update method error", typeof(TodoRepository));
+                return false;
+            }
+        }
+
         public override async Task<bool> Delete(Guid id)
         {
             try

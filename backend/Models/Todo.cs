@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using backend.Models.DTOS.Requests;
 
 namespace backend.Models {
     public class Todo {
@@ -13,6 +14,8 @@ namespace backend.Models {
         
         [Required]
         public DateTime Deadline {get; set;}
+
+        public ApplicationUser ApplicationUser {get; set;}
         
     }
 }

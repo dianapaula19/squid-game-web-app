@@ -6,10 +6,9 @@ using System.ComponentModel.DataAnnotations;
 namespace backend.Models 
 {
     public class Player {
-        
+
         [Key]
-        [ForeignKey("User")]
-        public Guid UserId {get; set;}
+        public Guid PlayerId {get; set;}
 
         [Required]
         [StringLength(30)]
@@ -21,5 +20,9 @@ namespace backend.Models
         
         [Required]
         public string Gender {get; set;}
+
+        public string ApplicationUserForeignKey {get; set;}
+
+        public ApplicationUser ApplicationUser {get; set;}
     }
 }

@@ -37,7 +37,7 @@ namespace backend.Core.Repositories
         {
             try
             {
-                var exist = await _dbSet.Where(x => x.UserId == id).FirstOrDefaultAsync();
+                var exist = await _dbSet.Where(x => x.PlayerId == id).FirstOrDefaultAsync();
                 if (exist != null) 
                 {
                     _dbSet.Remove(exist);

@@ -7,9 +7,12 @@ namespace backend.Models
     public class Guard {
 
         [Key]
-        [ForeignKey("User")]
-        public Guid UserId {get; set;}
+        public Guid GuardId {get; set;}
         public string Type {get; set;}
+
+        public string ApplicationUserForeignKey {get; set;}
+
+        public ApplicationUser ApplicationUser {get; set;}
 
     }
 }
