@@ -21,20 +21,20 @@ namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthManagementController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtConfig _jwtConfig;
         private readonly TokenValidationParameters _tokenValidationParams;
         private readonly DatabaseContext _databaseContext;
-        private readonly ILogger<AuthManagementController> _logger;
+        private readonly ILogger<AuthController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        public AuthManagementController(
+        public AuthController(
             UserManager<ApplicationUser> userManager, 
             IOptionsMonitor<JwtConfig> optionsMonitor,
             TokenValidationParameters tokenValidationParams,
             DatabaseContext databaseContext,
-            ILogger<AuthManagementController> logger,
+            ILogger<AuthController> logger,
             IUnitOfWork unitOfWork
             )
         {
