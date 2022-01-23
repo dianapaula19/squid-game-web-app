@@ -12,6 +12,8 @@ namespace backend.DAL {
         public virtual DbSet<Player> Players {get; set;}
         public virtual DbSet<Guard> Guards {get; set;}
 
+        public virtual DbSet<RefreshToken> RefreshTokens {get; set;}
+
         public virtual DbSet<ApplicationUserVIP> ApplicationUserVIPs {get; set;}
         public DatabaseContext (DbContextOptions<DatabaseContext> options) : base (options) { }
 
