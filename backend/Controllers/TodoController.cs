@@ -6,12 +6,13 @@ using Microsoft.Extensions.Logging;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Linq;
 
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Guard, FronMan")]
     public class TodoController : ControllerBase
     {
         private readonly ILogger<TodoController> _logger;
@@ -37,11 +38,12 @@ namespace backend.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> CreateTodo(Todo todo)
+        public async Task<IActionResult> CreateTodo(Todo todo, string username)
         {
             if (ModelState.IsValid)
             {
                 todo.Id = Guid.NewGuid();
+                todo.ApplicationUserForeignKey = username;
                 await _unitOfWork.Todos.Add(todo);
                 await _unitOfWork.CompleteAsync();
 
@@ -76,5 +78,17 @@ namespace backend.Controllers
 
             return Ok(todo);
         }
+
+        [HttpGet("{id}")]
+        [Route("Guard")]
+        public async Task<IActionResult> GetTodosByGuardId(string username)
+        {
+            var todos = await _unitOfWork.Todos.All();
+            if (todos == null)  
+                return NotFound();
+            todos = todos.Where(t => t.ApplicationUserForeignKey == username);
+            return Ok(todos);
+        }
+
     }
 }

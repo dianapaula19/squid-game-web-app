@@ -16,6 +16,9 @@ namespace backend.Models {
         public DateTime Deadline {get; set;}
 
         public ApplicationUser ApplicationUser {get; set;}
+
+        [ForeignKey("ApplicationUser")]
+        public string ApplicationUserForeignKey {get; set;}
         
     }
 }

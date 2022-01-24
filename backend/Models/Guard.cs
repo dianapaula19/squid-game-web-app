@@ -10,6 +10,7 @@ namespace backend.Models
         public Guid GuardId {get; set;}
         public string Type {get; set;}
 
+        [ForeignKey("ApplicationUser")]
         public string ApplicationUserForeignKey {get; set;}
 
         public ApplicationUser ApplicationUser {get; set;}

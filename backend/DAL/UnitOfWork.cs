@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using backend.Core.IConfiguration;
 using backend.Core.IRepositories;
 using backend.Core.Repositories;
-using backend.Models;
 using Microsoft.Extensions.Logging;
 
 namespace backend.DAL

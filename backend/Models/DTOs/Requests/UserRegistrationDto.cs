@@ -17,11 +17,9 @@ namespace backend.Models.DTOS.Requests
         [Required]
         public string Role {get; set;}
 
-        public string SocialIdentificationNumber {get; set;}
-
         public string Country {get; set;}
 
-        public PlayerRegistrationDTO PlayerRegistrationDTO {get; set;}
+        public PlayerRegistrationRequest PlayerRegistrationRequest {get; set;}
 
 
     }

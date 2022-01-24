@@ -21,6 +21,7 @@ namespace backend.Models
         [Required]
         public string Gender {get; set;}
 
+        [ForeignKey("ApplicationUser")]
         public string ApplicationUserForeignKey {get; set;}
 
         public ApplicationUser ApplicationUser {get; set;}

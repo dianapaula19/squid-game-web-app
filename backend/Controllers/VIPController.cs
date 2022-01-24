@@ -4,9 +4,15 @@ using backend.Core.IConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using backend.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.HttpSys;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "FrontMan")]
     public class VIPController : ControllerBase
     {
         private readonly ILogger<VIPController> _logger;
