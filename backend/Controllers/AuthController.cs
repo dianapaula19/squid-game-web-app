@@ -84,7 +84,7 @@ namespace backend.Controllers
                         newPlayer.ApplicationUserForeignKey = newUser.Id;
                         await _unitOfWork.Players.Add(newPlayer);
                         newUser.PlayerInfo = newPlayer;
-                    } else if (user.Role.ToUpper() == "Guard")
+                    } else if (user.Role.ToUpper() == "GUARD")
                     {
                         var newGuard = new Guard();
                         newGuard.ApplicationUser = newUser;
