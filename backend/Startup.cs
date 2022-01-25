@@ -71,6 +71,11 @@ namespace backend
                 jwt.TokenValidationParameters = tokenValidationParams;
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
+
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<DatabaseContext>();
@@ -95,6 +100,8 @@ namespace backend
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors("Open");
 
             app.UseEndpoints(endpoints =>
             {

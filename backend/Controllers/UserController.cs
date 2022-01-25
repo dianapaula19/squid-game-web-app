@@ -13,7 +13,7 @@ namespace backend.Models
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Player, Guard, FronMan")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Guard, FrontMan")]
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;

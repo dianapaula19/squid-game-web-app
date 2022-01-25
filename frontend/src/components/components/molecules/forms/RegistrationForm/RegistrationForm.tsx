@@ -189,6 +189,7 @@ export const RegistrationForm = () => {
                         name={"password"}
                         onChange={handleChange}
                         label={"Password"}
+                        type={"password"}
                         variant="outlined"
                         required
                         fullWidth
@@ -198,6 +199,7 @@ export const RegistrationForm = () => {
                         name={"confirmPassword"}
                         onChange={handleChange}
                         label={"Confirm Password"}
+                        type={"password"}
                         variant="outlined"
                         required
                         fullWidth

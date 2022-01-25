@@ -4,7 +4,7 @@ import { Box } from "@mui/system";
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { loginAsync } from "../../../../../features/auth/authSlice";
+import { ILoginRequest, loginAsync } from "../../../../../features/auth/authSlice";
 
 const useStyles = makeStyles({
     form: {
@@ -24,17 +24,13 @@ const useStyles = makeStyles({
     }
   });
 
-export interface IFormData {
-    email: string;
-    password: string;
-}
 
 export const LoginForm = () => {
     const classes = useStyles();
 
     const dispatch = useDispatch();
 
-    const [formData, setFormData] = useState<IFormData>({
+    const [formData, setFormData] = useState<ILoginRequest>({
         email: '',
         password: '',
     });
@@ -44,12 +40,11 @@ export const LoginForm = () => {
         setFormData({
             ...formData,
             [event.target.name]: event.target.value
-        })
-        console.log(event.target.value)
+        });
     };
 
     const signIn = () => {
-        dispatch(loginAsync);
+        dispatch(loginAsync(formData));
     }
 
     return (
@@ -76,6 +71,7 @@ export const LoginForm = () => {
                 variant="outlined"
                 required
                 fullWidth
+                type={"password"}
                 className={classes.textfield}
             />
             <Button 

@@ -19,7 +19,7 @@ const initialState: AuthState = {
   isError: false,
 };
 
-export interface LoginRequest {
+export interface ILoginRequest {
   email: string,
   password: string,
 }
@@ -33,11 +33,12 @@ export interface LoginResponse {
 
 export const loginAsync = createAsyncThunk(
     'auth/login',
-    async (loginRequest: LoginRequest, thunkAPI) => {
+    async (loginRequest: ILoginRequest, thunkAPI) => {
       await axios
         .post<LoginResponse>(API_AUTH_URL + "login", loginRequest)
         .then((response) => {
           localStorage.setItem("token", response.data.token)
+          console.log('worked');
           return response.data
         })
         .catch((error) => {
