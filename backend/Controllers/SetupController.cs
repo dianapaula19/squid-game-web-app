@@ -116,7 +116,7 @@ namespace TodoApp.Controllers
             {
                 _logger.LogInformation($"The user was not abel to be added to the role");
                 return BadRequest(new {
-                    error = "The user was not abel to be added to the role"
+                    error = "The user was not able to be added to the role"
                 });
             }
             

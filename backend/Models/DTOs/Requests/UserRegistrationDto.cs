@@ -19,7 +19,7 @@ namespace backend.Models.DTOS.Requests
 
         public string Country {get; set;}
 
-        public PlayerRegistrationRequest PlayerRegistrationRequest {get; set;}
+        public PlayerInfo PlayerInfo {get; set;}
 
 
     }

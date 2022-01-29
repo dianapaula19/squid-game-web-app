@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import React from "react";
-import Background from "../../../../images/background.jpg"
+import Background from "../../../images/background.jpg"
 import { LoginForm } from "../../molecules/forms/LoginForm/LoginForm";
 import { RegistrationForm } from "../../molecules/forms/RegistrationForm/RegistrationForm";
 

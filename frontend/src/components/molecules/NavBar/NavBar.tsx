@@ -2,10 +2,8 @@ import { AppBar, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from 
 import { Box } from "@mui/system";
 import React from "react";
 import MenuIcon from '@mui/icons-material/Menu';
-import { links } from "../../../../Utils";
+import { ILink, links, Role } from "../../../Utils";
 import { Link, useNavigate } from "react-router-dom";
-import { Role } from "../../../../App";
-import { GolfCourseTwoTone } from "@mui/icons-material";
 
 export interface IProps {
     role: Role;
@@ -21,10 +19,7 @@ export const NavBar = ({role}: IProps) => {
     const handleClose = () => {
       setAnchorEl(null);
     };
-    const goTo = (link: string) => {
-        navigate(link);
-    }
-    
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
@@ -82,18 +77,18 @@ export const NavBar = ({role}: IProps) => {
                                 >
                                     <MenuItem
                                         component={Link} 
-                                        to={"/profile"}
+                                        to={"/profile/:id"}
                                     >
                                         Profile
                                     </MenuItem>
                                     {
-                                        links[role].map((link: string, index: number) => (
+                                        links[role].map((link: ILink, index: number) => (
                                             <MenuItem
-                                                key = {link + index}
+                                                key = {link.linkName + index.toString()}
                                                 component={Link} 
-                                                to={"/" + link.toLowerCase()}
+                                                to={"/" + link.link}
                                             >
-                                                {link}
+                                                {link.linkName}
                                             </MenuItem>
                                         ))
                                     }

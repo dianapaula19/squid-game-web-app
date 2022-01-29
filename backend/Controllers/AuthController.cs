@@ -13,7 +13,6 @@ using System.Security.Claims;
 using System;
 using backend.Models;
 using backend.DAL;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using backend.Core.IConfiguration;
 
@@ -24,6 +23,8 @@ namespace backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtConfig _jwtConfig;
         private readonly TokenValidationParameters _tokenValidationParams;
         private readonly DatabaseContext _databaseContext;
@@ -33,6 +34,7 @@ namespace backend.Controllers
         private readonly IDictionary<int, string> _types;
         public AuthController(
             UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager,
             IOptionsMonitor<JwtConfig> optionsMonitor,
             TokenValidationParameters tokenValidationParams,
             DatabaseContext databaseContext,
@@ -41,6 +43,7 @@ namespace backend.Controllers
             )
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _jwtConfig = optionsMonitor.CurrentValue;
             _tokenValidationParams = tokenValidationParams;
             _databaseContext = databaseContext;
@@ -58,7 +61,6 @@ namespace backend.Controllers
         {
             if(ModelState.IsValid)
             {
-                // We can utilise the model
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
 
                 if(existingUser != null)
@@ -71,7 +73,12 @@ namespace backend.Controllers
                     });
                 }
 
-                var newUser = new ApplicationUser() { Email = user.Email, UserName = user.Username, Country = user.Country};
+                var newUser = new ApplicationUser() { 
+                    Email = user.Email, 
+                    UserName = user.Username, 
+                    Country = user.Country,
+                    Role = user.Role
+                };
                 var newPlayer = new Player();
                 var newGuard = new Guard();
 
@@ -80,9 +87,9 @@ namespace backend.Controllers
                     newUser.Status = "alive";
                     if (user.Role == "Player")
                     {
-                        newPlayer.FirstName = user.PlayerRegistrationRequest.FirstName;
-                        newPlayer.LastName = user.PlayerRegistrationRequest.LastName;
-                        newPlayer.Gender = user.PlayerRegistrationRequest.Gender;
+                        newPlayer.FirstName = user.PlayerInfo.FirstName;
+                        newPlayer.LastName = user.PlayerInfo.LastName;
+                        newPlayer.Gender = user.PlayerInfo.Gender;
                         newUser.PlayerInfoForeignKey = newPlayer.PlayerId;
                     }
                     if (user.Role == "Guard")
@@ -93,11 +100,31 @@ namespace backend.Controllers
                     }
                 }
 
-            
-
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
+                
                 if(isCreated.Succeeded)
                 {
+                    var roleExist = await _roleManager.RoleExistsAsync(user.Role);
+
+                    if(!roleExist) // checks on the role exist status
+                    {
+                        _logger.LogInformation($"The role does not exist");
+                        return BadRequest(new {
+                            error = "Role does not exist"
+                        });
+                    }
+
+                    var result = await _userManager.AddToRoleAsync(newUser, user.Role);
+
+                    // Check if the user is assigned to the role successfully
+                    if(!result.Succeeded)
+                    {
+                        _logger.LogInformation($"The user was not able to be added to the role");
+                        return BadRequest(new {
+                            error = "The user was not able to be added to the role"
+                        });
+                    }
+
                     var jwtToken = GenerateJwtToken(newUser);
 
                     if (user.Role == "Player") {
@@ -112,22 +139,23 @@ namespace backend.Controllers
 
                     return Ok(new RegistrationResponse() {
                         Success = true,
-                        Token = jwtToken
+                        Token = jwtToken,
+                        Role = user.Role
                     });
                     
                 } else {
                     return BadRequest(new RegistrationResponse(){
-                            Errors = isCreated.Errors.Select(x => x.Description).ToList(),
-                            Success = false
+                        Errors = isCreated.Errors.Select(x => x.Description).ToList(),
+                        Success = false
                     });
                 }
             }
 
             return BadRequest(new RegistrationResponse(){
-                    Errors = new List<string>() {
-                        "Invalid payload"
-                    },
-                    Success = false
+                Errors = new List<string>() {
+                    "Invalid payload"
+                },
+                Success = false
             });
         }
 
@@ -140,7 +168,7 @@ namespace backend.Controllers
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
 
                 if(existingUser == null) {
-                        return BadRequest(new RegistrationResponse(){
+                        return BadRequest(new LoginResponse(){
                             Errors = new List<string>() {
                                 "Invalid login request"
                             },
@@ -151,23 +179,26 @@ namespace backend.Controllers
                 var isCorrect = await _userManager.CheckPasswordAsync(existingUser, user.Password);
 
                 if(!isCorrect) {
-                      return BadRequest(new RegistrationResponse(){
-                            Errors = new List<string>() {
-                                "Invalid login request"
-                            },
-                            Success = false
+                      return BadRequest(new LoginResponse(){
+                        Errors = new List<string>() {
+                            "Invalid login request"
+                        },
+                        Success = false
                     });
                 }
 
-                var jwtToken  =GenerateJwtToken(existingUser);
+                var jwtToken = GenerateJwtToken(existingUser);
 
-                return Ok(new RegistrationResponse() {
+                return Ok(new LoginResponse() {
                     Success = true,
-                    Token = jwtToken
+                    Token = jwtToken,
+                    Email = existingUser.Email,
+                    Role = existingUser.Role,
+                    Status = existingUser.Status,
                 });
             }
 
-            return BadRequest(new RegistrationResponse(){
+            return BadRequest(new LoginResponse(){
                     Errors = new List<string>() {
                         "Invalid payload"
                     },

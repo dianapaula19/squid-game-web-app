@@ -1,8 +1,6 @@
-import { Button, LinearProgress, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { Box, createTheme } from "@mui/system";
+import { Button, LinearProgress, Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import GameBackground from "../../../../images/game-background.png";
+import GameBackground from "../../../images/game-background.png";
 
 const SECOND = 1000;
 const colors = {

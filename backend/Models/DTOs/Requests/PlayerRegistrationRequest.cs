@@ -1,7 +1,7 @@
 namespace backend.Models.DTOS.Requests
 {
 
-    public class PlayerRegistrationRequest {
+    public class PlayerInfo {
         public string FirstName {get; set;}
         
         public string LastName {get; set;}

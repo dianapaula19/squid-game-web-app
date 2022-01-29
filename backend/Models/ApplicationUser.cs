@@ -11,6 +11,8 @@ namespace backend.Models
     {
         [Required]
         public string Country {get; set;}
+        [Required]
+        public string Role {get; set;}
 
         public string Status {get; set;}
 

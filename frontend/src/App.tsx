@@ -1,16 +1,9 @@
 import React from 'react';
-import { AuthPage, AuthOption } from './components/components/pages/AuthPage/AuthPage';
-import { NavBar } from './components/components/molecules/NavBar/NavBar';
+import { AuthPage, AuthOption } from './components/pages/AuthPage/AuthPage';
+import { NavBar } from './components/molecules/NavBar/NavBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { GamePage } from './components/components/pages/GamePage/GamePage';
-
-export enum Role {
-  player = 'Player',
-  guard = 'Guard',
-  frontman = 'FrontMan',
-  undefined = 'Undefined'
-}
-
+import { GamePage } from './components/pages/GamePage/GamePage';
+import { Role } from './Utils';
 
 function App() {
   return (

@@ -1,3 +1,4 @@
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { 
     Autocomplete, 
     Button, 
@@ -5,6 +6,8 @@ import {
     FormControl, 
     FormControlLabel, 
     FormLabel, 
+    IconButton, 
+    InputAdornment, 
     Radio, 
     RadioGroup, 
     TextField, 
@@ -13,7 +16,7 @@ from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, {useState} from "react";
-import { countryList } from "../../../../../Utils";
+import { countryList, emailRegex, passwordRegex, Role } from "../../../../Utils";
 
 const useStyles = makeStyles({
 
@@ -23,6 +26,7 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         flexDirection: 'row',
         maxWidth: '40%',
+        marginTop: '10%',
         marginRight: '20%',
     },
     buttons: {
@@ -60,24 +64,73 @@ const useStyles = makeStyles({
     }
   });
 
-enum Role {
-    player = 'Player',
-    guard = 'Guard',
-}
-
 export const RegistrationForm = () => {
+    
     const classes = useStyles();
 
     const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        country: '',
-        firstName: '',
-        lastName: '',
-        gender: '',
-        password: '',
-        confirmPassword: ''
+        username: "",
+        email: "",
+        country: "",
+        firstName: "",
+        lastName: "",
+        gender: "",
+        password: "",
+        confirmPassword: ""
     });
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+    const handleMouseDownConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
+    const errors = {
+        username: {
+            valid: formData.username !== "",
+            errorMessage: "The username field must not be empty" 
+        },
+        email: {
+            valid: emailRegex.test(formData.email),
+            errorMessage: (
+                <div>
+                    <div>The email must follow the following pattern:</div>
+                    <div>example@domain.com</div>    
+                </div>
+            )
+        },
+        country: {
+            valid: formData.country !== "",
+            errorMessage: "The country field must not be empty"
+        },
+        firstName: {
+            valid: formData.firstName !== "",
+            errorMessage: "The first name field must not be empty"
+        },
+        lastName: {
+            valid: formData.lastName !== "",
+            errorMessage: "The last name field must not be empty"
+        },
+        gender: {
+            valid: formData.gender !== "",
+            errorMessage: "The gender field must not be empty"
+        },
+        password: {
+            valid: passwordRegex.test(formData.password),
+            errorMessage: (
+                <div>
+                    <div>The password must have minimum eight characters,</div>
+                    <div>at least one letter, one number and one special character</div>    
+                </div>
+            )
+        },
+        confirmPassword: {
+            valid: formData.password === formData.confirmPassword,
+            errorMessage: "The passwords don't match"
+        },
+    };
 
     const [role, setRole] = useState<Role | null>(null);
 
@@ -85,8 +138,8 @@ export const RegistrationForm = () => {
         setFormData({
             ...formData,
             [event.target.name]: event.target.value
-        })
-        console.log(event.target.value)
+        });
+        console.log(event.target.name + " " + event.target.value)
     };
 
     return (
@@ -123,6 +176,11 @@ export const RegistrationForm = () => {
                         onChange={handleChange}
                         label={"Username"}
                         variant="outlined"
+                        error={!errors.username.valid}
+                        helperText={
+                            !errors.username.valid && 
+                            errors.username.errorMessage
+                        }
                         required
                         fullWidth
                     />
@@ -132,6 +190,11 @@ export const RegistrationForm = () => {
                         onChange={handleChange}
                         label={"Email"}
                         variant="outlined"
+                        error={!errors.email.valid}
+                        helperText={
+                            !errors.email.valid && 
+                            errors.email.errorMessage
+                        }
                         required
                         fullWidth
                     />
@@ -139,6 +202,7 @@ export const RegistrationForm = () => {
                         disablePortal
                         id="combo-box-country"
                         options={countryList}
+                        defaultValue={countryList[0]}
                         fullWidth
                         renderInput={(params) => <TextField 
                                                     {...params}
@@ -157,6 +221,12 @@ export const RegistrationForm = () => {
                                     name={"firstName"}
                                     label={"First Name"}
                                     variant="outlined"
+                                    onChange={handleChange}
+                                    error={!errors.firstName.valid}
+                                    helperText={
+                                        !errors.firstName.valid && 
+                                        errors.firstName.errorMessage
+                                    }
                                     required
                                     fullWidth
                                 />
@@ -165,6 +235,12 @@ export const RegistrationForm = () => {
                                     name={"lastName"}
                                     label={"Last Name"}
                                     variant="outlined"
+                                    onChange={handleChange}
+                                    error={!errors.lastName.valid}
+                                    helperText={
+                                        !errors.lastName.valid && 
+                                        errors.lastName.errorMessage
+                                    }
                                     required
                                     fullWidth
                                 />
@@ -178,9 +254,9 @@ export const RegistrationForm = () => {
                                         >
                                             <FormControlLabel value="female" control={<Radio />} label="Female" />
                                             <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                            <FormControlLabel value="other" control={<Radio />} label="Other" />
+                                            <FormControlLabel value="unspecified" control={<Radio />} label="I'd rather not say" />
                                         </RadioGroup>
-                                    </FormControl>
+                                </FormControl>
                             </>
                         )
                     }
@@ -189,8 +265,26 @@ export const RegistrationForm = () => {
                         name={"password"}
                         onChange={handleChange}
                         label={"Password"}
-                        type={"password"}
+                        type={showPassword ? "text" : "password"}
                         variant="outlined"
+                        error={!errors.password.valid}
+                        helperText={
+                            !errors.password.valid && 
+                            errors.password.errorMessage
+                        }
+                        InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={handleClickShowPassword}
+                                  onMouseDown={handleMouseDownPassword}
+                                >
+                                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          }}
                         required
                         fullWidth
                     />
@@ -199,13 +293,44 @@ export const RegistrationForm = () => {
                         name={"confirmPassword"}
                         onChange={handleChange}
                         label={"Confirm Password"}
-                        type={"password"}
+                        type={showConfirmPassword ? "text" : "password"}
                         variant="outlined"
+                        error={!errors.confirmPassword.valid}
+                        helperText={
+                            !errors.confirmPassword.valid && 
+                            errors.confirmPassword.errorMessage
+                        }
                         required
                         fullWidth
+                        InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={handleClickShowConfirmPassword}
+                                  onMouseDown={handleMouseDownConfirmPassword}
+                                >
+                                  {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          }}
                     />
                     <Button 
                         variant="contained"
+                        disabled={!(
+                            errors.username.valid && 
+                            errors.email.valid &&
+                            (
+                                role !== Role.player ||
+                                (
+                                    errors.firstName.valid &&
+                                    errors.lastName.valid
+                                )
+                            ) &&
+                            errors.password.valid && 
+                            errors.confirmPassword.valid
+                        )}
                         fullWidth    
                     >
                         Sign Up

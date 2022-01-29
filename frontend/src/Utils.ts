@@ -250,23 +250,73 @@ const countryList = [
 	"Åland Islands"
 ];
 
-const links: {[id: string]: string[]} = {
-	'Player': [
-		'Start Game'
+interface ILink {
+	linkName: string;
+	link: string;
+}
+
+const links: {[id: string]: ILink[]} = {
+	"Player": [
+		{
+			linkName: "Start Game",
+			link: "link"
+		}
 	],
-	'Guard': [
-		'Todos'
+	"Guard": [
+		{
+			linkName: "Todos",
+			link: "todos"
+		}
 	],
-	'Frontman': [
-		'User',
-		'VIPS'
+	"FrontMan": [
+		{
+			linkName: "Users",
+			link: "users"
+		},
+		{
+			linkName: "VIPS",
+			link: "vips"
+		}
 	]
 }
 
-const API_AUTH_URL = 'https://localhost:5001/api/auth/'
+enum Role {
+    player = 'Player',
+    guard = 'Guard',
+    frontman = 'FrontMan',
+    undefined = 'Undefined'
+}
+
+enum GuardRole {
+	manager = 'Manager',
+	soldier = 'Soldier',
+	worker = 'Worker'
+}
+
+const guardMessage = (guardRole: GuardRole) => {
+	switch (guardRole) {
+		case GuardRole.manager:
+			return "You are a Manager 💪"
+		case GuardRole.soldier:
+			return "You are a Soldier 🪖"
+		case GuardRole.worker:
+			return "You are a Worker 👔"
+	}
+}
+
+const API_AUTH_URL = 'https://localhost:5001/api/auth/';
+
+const emailRegex = /^\S+@\S+\.\S+$/;
+
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}/;
 
 export {
-	countryList,
-	links,
+	countryList, links,
+	Role,
+	GuardRole,
+	guardMessage,
+	emailRegex,
+	passwordRegex,
 	API_AUTH_URL
-}
+};
+export type { ILink };
