@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Core.IConfiguration;
 using backend.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,18 +18,20 @@ namespace backend.Models
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly DatabaseContext _databaseContext;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UserController> _logger;
 
         public UserController(
             UserManager<ApplicationUser> userManager, 
             DatabaseContext databaseContext,
-            ILogger<UserController> logger
+            ILogger<UserController> logger,
+            IUnitOfWork unitOfWork 
             )
         {
             _userManager = userManager;
             _databaseContext = databaseContext;
             _logger = logger;
-        
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
@@ -61,7 +64,7 @@ namespace backend.Models
             }
             user.Status = "dead";
             await _userManager.UpdateAsync(user);
-            return(Ok());
+            return(Ok("Updated the status"));
         }
 
         [HttpGet]
@@ -73,6 +76,42 @@ namespace backend.Models
                 return BadRequest("Email not registered");
             }
             return(Ok(user));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "FrontMan")]
+        public async Task<IActionResult> GetUsersByCountry(string email)
+        {
+            var frontman = await _userManager.FindByEmailAsync(email);
+            if(frontman == null)
+            {
+                return BadRequest("No such user exists");
+            }
+            var users = await _userManager.Users.ToListAsync();
+            return(Ok(users.Where(u => u.Country == frontman.Country)));
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Player, Guard")]
+        [Route("Delete")]
+        public async Task<IActionResult> DeleteAccount(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return BadRequest("No such user exists");
+            }
+            if (user.ApplicationUserRole == "Player") 
+            {
+                await _unitOfWork.Players.Delete(user.PlayerInfoForeignKey);
+            }
+            if (user.ApplicationUserRole == "Guard") 
+            {
+                await _unitOfWork.Players.Delete(user.GuardInfoForeignKey);
+            }
+            await _userManager.DeleteAsync(user);
+            return Ok("Account deleted succesfully");
+            
         }
     }
 }

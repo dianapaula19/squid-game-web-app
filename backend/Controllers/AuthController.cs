@@ -77,7 +77,7 @@ namespace backend.Controllers
                     Email = user.Email, 
                     UserName = user.Username, 
                     Country = user.Country,
-                    Role = user.Role
+                    ApplicationUserRole = user.Role
                 };
                 var newPlayer = new Player();
                 var newGuard = new Guard();
@@ -90,14 +90,24 @@ namespace backend.Controllers
                         newPlayer.FirstName = user.PlayerInfo.FirstName;
                         newPlayer.LastName = user.PlayerInfo.LastName;
                         newPlayer.Gender = user.PlayerInfo.Gender;
-                        newUser.PlayerInfoForeignKey = newPlayer.PlayerId;
                     }
                     if (user.Role == "Guard")
                     {
                         var rand = new Random();
                         newGuard.Type = _types[rand.Next(3)];
-                        newUser.GuardInfoForeignKey = newGuard.GuardId;
                     }
+                }
+
+                if (user.Role == "Player") {
+                    newPlayer.ApplicationUserForeignKey = newUser.Id;
+                    await _unitOfWork.Players.Add(newPlayer);
+                    newUser.PlayerInfoForeignKey = newPlayer.PlayerId;
+                }
+
+                if (user.Role == "Guard") {
+                    newGuard.ApplicationUserForeignKey = newUser.Id;
+                    await _unitOfWork.Guards.Add(newGuard);
+                    newUser.GuardInfoForeignKey = newGuard.GuardId;
                 }
 
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
@@ -127,20 +137,11 @@ namespace backend.Controllers
 
                     var jwtToken = GenerateJwtToken(newUser);
 
-                    if (user.Role == "Player") {
-                        newPlayer.ApplicationUserForeignKey = newUser.Id;
-                        await _unitOfWork.Players.Add(newPlayer);
-                    }
-
-                    if (user.Role == "Guard") {
-                        newGuard.ApplicationUserForeignKey = newUser.Id;
-                        await _unitOfWork.Guards.Add(newGuard);
-                    }
-
                     return Ok(new RegistrationResponse() {
                         Success = true,
                         Token = jwtToken,
-                        Role = user.Role
+                        Role = user.Role,
+                        Email = user.Email,
                     });
                     
                 } else {
@@ -193,7 +194,7 @@ namespace backend.Controllers
                     Success = true,
                     Token = jwtToken,
                     Email = existingUser.Email,
-                    Role = existingUser.Role,
+                    Role = existingUser.ApplicationUserRole,
                     Status = existingUser.Status,
                 });
             }

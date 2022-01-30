@@ -4,6 +4,7 @@ import { Box } from "@mui/system";
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
 import { ILoginRequest, loginAsync } from "../../../../features/auth/authSlice";
+import { emailRegex, passwordRegex } from "../../../../Utils";
 
 const useStyles = makeStyles({
     form: {
@@ -30,9 +31,30 @@ export const LoginForm = () => {
     const dispatch = useDispatch();
 
     const [formData, setFormData] = useState<ILoginRequest>({
-        email: '',
-        password: '',
+        Email: '',
+        Password: '',
     });
+
+    const errors = {
+        email: {
+            valid: emailRegex.test(formData.Email),
+            errorMessage: (
+                <div>
+                    <div>The email must follow the following pattern:</div>
+                    <div>example@domain.com</div>    
+                </div>
+            )
+        },
+        password: {
+            valid: passwordRegex.test(formData.Password),
+            errorMessage: (
+                <div>
+                    <div>The password must have minimum eight characters,</div>
+                    <div>at least one letter, one number and one special character</div>    
+                </div>
+            )
+        },
+    }
 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,19 +77,29 @@ export const LoginForm = () => {
                 Login
             </Typography>
             <TextField
-                name={"email"}
+                name={"Email"}
                 onChange={handleChange}
                 label={"Email"}
                 variant="outlined"
+                error={!errors.email.valid}
+                helperText={
+                    !errors.email.valid && 
+                    errors.email.errorMessage
+                }
                 required
                 fullWidth
                 className={classes.textfield}
             />
             <TextField
-                name={"password"}
+                name={"Password"}
                 onChange={handleChange}
                 label={"Password"}
                 variant="outlined"
+                error={!errors.password.valid}
+                helperText={
+                    !errors.password.valid && 
+                    errors.password.errorMessage
+                }
                 required
                 fullWidth
                 type={"password"}
@@ -77,6 +109,10 @@ export const LoginForm = () => {
                 variant="contained"
                 fullWidth
                 onClick={signIn}
+                disabled={!(
+                    errors.email.valid &&
+                    errors.password.valid
+                )}
             >
                 Sign In
             </Button>

@@ -16,6 +16,8 @@ from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, {useState} from "react";
+import { useDispatch } from "react-redux";
+import { registerAsync } from "../../../../features/auth/authSlice";
 import { countryList, emailRegex, passwordRegex, Role } from "../../../../Utils";
 
 const useStyles = makeStyles({
@@ -65,6 +67,8 @@ const useStyles = makeStyles({
   });
 
 export const RegistrationForm = () => {
+
+    const dispatch = useDispatch();
     
     const classes = useStyles();
 
@@ -139,8 +143,35 @@ export const RegistrationForm = () => {
             ...formData,
             [event.target.name]: event.target.value
         });
-        console.log(event.target.name + " " + event.target.value)
     };
+
+    const signUp = () => {
+        if (role === Role.player) {
+            const request = {
+                Username: formData.username,
+                Email: formData.email,
+                Password: formData.password,
+                Role: Role.player,
+                Country: formData.country,
+                PlayerInfo: {
+                    FirstName: formData.firstName,
+                    LastName: formData.lastName,
+                    Gender: formData.gender
+                }    
+            }
+            dispatch(registerAsync(request));
+            
+        } else {
+            const request = {
+                Username: formData.username,
+                Email: formData.email,
+                Password: formData.password,
+                Role: Role.guard,
+                Country: formData.country, 
+            }
+            dispatch(registerAsync(request));
+        }
+    }
 
     return (
         <Box className={classes.root}>
@@ -318,6 +349,7 @@ export const RegistrationForm = () => {
                     />
                     <Button 
                         variant="contained"
+                        onClick={signUp}
                         disabled={!(
                             errors.username.valid && 
                             errors.email.valid &&

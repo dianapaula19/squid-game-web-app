@@ -77,7 +77,7 @@ export const NavBar = ({role}: IProps) => {
                                 >
                                     <MenuItem
                                         component={Link} 
-                                        to={"/profile/:id"}
+                                        to={"/profile/:username"}
                                     >
                                         Profile
                                     </MenuItem>

@@ -81,12 +81,12 @@ namespace backend.Controllers
 
         [HttpGet("{id}")]
         [Route("Guard")]
-        public async Task<IActionResult> GetTodosByGuardId(string username)
+        public async Task<IActionResult> GetTodosByGuardId(string id)
         {
             var todos = await _unitOfWork.Todos.All();
             if (todos == null)  
                 return NotFound();
-            todos = todos.Where(t => t.ApplicationUserForeignKey == username);
+            todos = todos.Where(t => t.ApplicationUserForeignKey == id);
             return Ok(todos);
         }
 
