@@ -4,9 +4,9 @@ import { RootState } from '../../app/store';
 import { API_AUTH_URL, Role } from '../../Utils';
 
 export interface IAuthState {
-  token: string | null;
-  role: string | null;
-  email: string | null;
+  token: null | string;
+  role: Role;
+  email: null | string;
   isLoading: boolean;
   isSuccess: boolean;
   isError: boolean; 
@@ -14,7 +14,7 @@ export interface IAuthState {
 
 const initialState: IAuthState = {
   token: null,
-  role: null,
+  role: Role.undefined,
   email: null,
   isLoading: false,
   isSuccess: false,
@@ -29,7 +29,7 @@ export interface ILoginRequest {
 export interface IProfileInfo {
   FirstName: string;
   LastName: string;
-  Gender: 'female' | 'male' | 'unspecified';
+  Gender: string;
 }
 
 export interface IRegistrationRequest {
@@ -41,16 +41,16 @@ export interface IRegistrationRequest {
 }
 
 export interface ILoginResponse {
-  token: string;
-  email: string;
-  role: string;
+  token: null | string;
+  email: null | string;
+  role: Role;
   success: boolean;
   error: null | string;
 }
 
 export interface IRegistrationResponse {
-  token: string;
-  email: string;
+  token: null | string;
+  email: null | string;
   role: Role;
   success: boolean;
   error: null | string;
@@ -104,8 +104,14 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: () => {
+    logout: (state) => {
       localStorage.removeItem("token");
+      state.token = null;
+      state.email = null;
+      state.role = Role.undefined;
+      state.isError = false;
+      state.isLoading = false;
+      state.isSuccess = false;
     }
   },
   extraReducers: (builder) => {
@@ -145,9 +151,9 @@ export const authSlice = createSlice({
 
 
 const { reducer } = authSlice;
-const email = (state: RootState) => state.auth.email;
+const authState = (state: RootState) => state.auth;
 export  
 {
-  email,
+  authState,
   reducer as authReducer
 };

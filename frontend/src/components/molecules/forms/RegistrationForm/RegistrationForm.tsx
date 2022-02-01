@@ -8,6 +8,7 @@ import {
     FormLabel, 
     IconButton, 
     InputAdornment, 
+    Modal, 
     Radio, 
     RadioGroup, 
     TextField, 
@@ -17,7 +18,9 @@ import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
-import { registerAsync } from "../../../../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../../app/hooks";
+import { authState, registerAsync } from "../../../../features/auth/authSlice";
 import { countryList, emailRegex, passwordRegex, Role } from "../../../../Utils";
 
 const useStyles = makeStyles({
@@ -68,6 +71,8 @@ const useStyles = makeStyles({
 
 export const RegistrationForm = () => {
 
+    let navigate = useNavigate();
+
     const dispatch = useDispatch();
     
     const classes = useStyles();
@@ -90,6 +95,10 @@ export const RegistrationForm = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
     const handleMouseDownConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     const errors = {
         username: {
@@ -145,8 +154,11 @@ export const RegistrationForm = () => {
         });
     };
 
+    const {isError} = useAppSelector(authState);
+
     const signUp = () => {
         if (role === Role.player) {
+            console.log(formData.gender);
             const request = {
                 Username: formData.username,
                 Email: formData.email,
@@ -160,6 +172,11 @@ export const RegistrationForm = () => {
                 }    
             }
             dispatch(registerAsync(request));
+            if (isError === true) {
+                handleOpen();
+                return;
+            }
+            navigate(`/profile`);
             
         } else {
             const request = {
@@ -170,6 +187,11 @@ export const RegistrationForm = () => {
                 Country: formData.country, 
             }
             dispatch(registerAsync(request));
+            if (isError === true) {
+                handleOpen();
+                return;
+            }
+            navigate(`/profile`);
         }
     }
 
@@ -369,6 +391,32 @@ export const RegistrationForm = () => {
                     </Button>
                 </Box>
             )}
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={{
+                    position: 'absolute' as 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'white',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                    }}
+                >
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Error
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        An error has occured. Try again!
+                    </Typography>
+                </Box>
+             </Modal>
         </Box>
     )
 }

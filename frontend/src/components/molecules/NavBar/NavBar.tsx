@@ -77,7 +77,7 @@ export const NavBar = ({role}: IProps) => {
                                 >
                                     <MenuItem
                                         component={Link} 
-                                        to={"/profile/:username"}
+                                        to={"/profile"}
                                     >
                                         Profile
                                     </MenuItem>
@@ -86,7 +86,7 @@ export const NavBar = ({role}: IProps) => {
                                             <MenuItem
                                                 key = {link.linkName + index.toString()}
                                                 component={Link} 
-                                                to={"/" + link.link}
+                                                to={"/" + link.linkPath}
                                             >
                                                 {link.linkName}
                                             </MenuItem>

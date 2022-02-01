@@ -252,30 +252,30 @@ const countryList = [
 
 interface ILink {
 	linkName: string;
-	link: string;
+	linkPath: string;
 }
 
 const links: {[id: string]: ILink[]} = {
 	"Player": [
 		{
 			linkName: "Start Game",
-			link: "link"
+			linkPath: "link"
 		}
 	],
 	"Guard": [
 		{
 			linkName: "Todos",
-			link: "todos"
+			linkPath: "todos"
 		}
 	],
 	"FrontMan": [
 		{
 			linkName: "Users",
-			link: "users"
+			linkPath: "users"
 		},
 		{
 			linkName: "VIPS",
-			link: "vips"
+			linkPath: "vips"
 		}
 	]
 }
@@ -304,7 +304,9 @@ const guardMessage = (guardRole: GuardRole) => {
 	}
 }
 
-const API_AUTH_URL = 'https://localhost:5001/api/auth/';
+const API_AUTH_URL = "https://localhost:5001/api/auth/";
+
+const API_USER_URL = "https://localhost:5001/api/user/";
 
 const emailRegex = /^\S+@\S+\.\S+$/;
 
@@ -317,6 +319,7 @@ export {
 	guardMessage,
 	emailRegex,
 	passwordRegex,
-	API_AUTH_URL
+	API_AUTH_URL,
+	API_USER_URL
 };
 export type { ILink };

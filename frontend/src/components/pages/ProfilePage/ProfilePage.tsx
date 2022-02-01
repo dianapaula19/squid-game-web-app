@@ -1,29 +1,75 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { guardMessage, GuardRole, Role } from "../../../Utils";
+import { Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authState } from "../../../features/auth/authSlice";
+import { userProfileAsync } from "../../../features/user/userSlice";
+import { Role } from "../../../Utils";
 
 export interface IProps {
     role: Role;
-    guardRole: GuardRole;
 }
 
-export const ProfilePage = ({role, guardRole}: IProps) => {
-    let { email } = useParams();
+export const ProfilePage = ({role}: IProps) => {
+    const {token, email} = useSelector(authState);
+
+    const dispatch = useDispatch();
+
+    const [userData, setUserData] = useState(null);
+
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        gender: "",
+    });
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [event.target.name]: event.target.value
+        });
+    };
+
+    useEffect(() => {
+        if (userData === null) {
+            dispatch(userProfileAsync({token: token, email: email}));
+        }
+    }, []);
+    
+
     return(
         <Box>
             {
                 role === Role.player && (
                     <Box>
-                        <TextField>
-
-                        </TextField>
-                        <TextField>
-                            
-                        </TextField>
-                        <TextField>
-                            
-                        </TextField>
+                        <TextField
+                            name={"firstName"}
+                            label={"First Name"}
+                            variant="outlined"
+                            onChange={handleChange}
+                            required
+                            fullWidth
+                        />
+                        <TextField
+                            name={"lastName"}
+                            label={"Last Name"}
+                            variant="outlined"
+                            onChange={handleChange}
+                            required
+                            fullWidth
+                        />
+                        <FormControl>
+                            <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
+                                <RadioGroup
+                                    aria-labelledby="gender-radio-buttons-group-label"
+                                    defaultValue="female"
+                                    name="gender"
+                                    onChange={handleChange}
+                                >
+                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="unspecified" control={<Radio />} label="I'd rather not say" />
+                                </RadioGroup>
+                        </FormControl>
                         <Button>
 
                         </Button>
@@ -36,7 +82,6 @@ export const ProfilePage = ({role, guardRole}: IProps) => {
                         <Typography
                             gutterBottom
                         >
-                            {guardMessage(guardRole)}
                         </Typography>
                     </Box>       
                 )

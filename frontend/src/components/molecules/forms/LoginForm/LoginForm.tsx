@@ -1,9 +1,12 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Button, IconButton, InputAdornment, Modal, TextField, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
-import { ILoginRequest, loginAsync } from "../../../../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../../app/hooks";
+import { authState, ILoginRequest, loginAsync } from "../../../../features/auth/authSlice";
 import { emailRegex, passwordRegex } from "../../../../Utils";
 
 const useStyles = makeStyles({
@@ -26,9 +29,22 @@ const useStyles = makeStyles({
 
 
 export const LoginForm = () => {
+
+    let navigate = useNavigate();
+
     const classes = useStyles();
 
     const dispatch = useDispatch();
+
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+    const {isError} = useAppSelector(authState);
 
     const [formData, setFormData] = useState<ILoginRequest>({
         Email: '',
@@ -66,6 +82,11 @@ export const LoginForm = () => {
 
     const signIn = () => {
         dispatch(loginAsync(formData));
+        if (isError === true) {
+            handleOpen();
+            return;
+        }
+        navigate("/profile");
     }
 
     return (
@@ -102,7 +123,20 @@ export const LoginForm = () => {
                 }
                 required
                 fullWidth
-                type={"password"}
+                type={showPassword ? "text" : "password"}
+                InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 className={classes.textfield}
             />
             <Button 
@@ -116,6 +150,32 @@ export const LoginForm = () => {
             >
                 Sign In
             </Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={{
+                    position: 'absolute' as 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'white',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                    }}
+                >
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Error
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        An error has occured. Try again!
+                    </Typography>
+                </Box>
+             </Modal>
         </Box>
     )
 }

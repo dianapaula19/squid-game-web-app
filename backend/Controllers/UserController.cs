@@ -1,7 +1,9 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.Core.IConfiguration;
 using backend.DAL;
+using backend.Models.DTOS.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -68,6 +70,7 @@ namespace backend.Models
         }
 
         [HttpGet]
+        [Route("Profile")]
         public async Task<IActionResult> GetUserData(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -75,7 +78,31 @@ namespace backend.Models
             {
                 return BadRequest("Email not registered");
             }
-            return(Ok(user));
+            var response = new ApplicationUserProfileResponse(){
+                Username = user.UserName,
+                Email = user.Email,
+                Country = user.Country,
+                Status = user.Status,
+            };
+            if(user.ApplicationUserRole == "Profile"){
+                var player = await _unitOfWork.Players.GetById(user.PlayerInfoForeignKey);
+                var playerResponse = new PlayerProfileResponse(){
+                    ApplicationUserProfileResponse = response,                    
+                    FirstName = player.FirstName,
+                    LastName = player.LastName,
+                    Gender = player.Gender
+                };
+                return(Ok(playerResponse));
+            }
+            if(user.ApplicationUserRole == "Guard"){
+                var guard = await _unitOfWork.Guards.GetById(user.GuardInfoForeignKey);
+                var guardResponse = new GuardProfileResponse(){
+                    ApplicationUserProfileResponse = response,
+                    Type = guard.Type
+                };
+                return(Ok(guardResponse));
+            }
+            return(Ok(response));
         }
 
         [HttpGet]
