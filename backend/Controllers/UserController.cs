@@ -80,27 +80,19 @@ namespace backend.Models
             }
             var response = new ApplicationUserProfileResponse(){
                 Username = user.UserName,
-                Email = user.Email,
                 Country = user.Country,
-                Status = user.Status,
             };
             if(user.ApplicationUserRole == "Profile"){
                 var player = await _unitOfWork.Players.GetById(user.PlayerInfoForeignKey);
-                var playerResponse = new PlayerProfileResponse(){
-                    ApplicationUserProfileResponse = response,                    
-                    FirstName = player.FirstName,
-                    LastName = player.LastName,
-                    Gender = player.Gender
-                };
-                return(Ok(playerResponse));
+                response.FirstName = player.FirstName;
+                response.LastName = player.LastName;
+                response.Gender = player.Gender;
+                return(Ok(response));
             }
             if(user.ApplicationUserRole == "Guard"){
                 var guard = await _unitOfWork.Guards.GetById(user.GuardInfoForeignKey);
-                var guardResponse = new GuardProfileResponse(){
-                    ApplicationUserProfileResponse = response,
-                    Type = guard.Type
-                };
-                return(Ok(guardResponse));
+                response.Type = guard.Type;
+                return(Ok(response));
             }
             return(Ok(response));
         }

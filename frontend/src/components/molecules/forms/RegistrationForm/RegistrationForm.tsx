@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../app/hooks";
 import { authState, registerAsync } from "../../../../features/auth/authSlice";
+import { userProfileAsync } from "../../../../features/user/userSlice";
 import { countryList, emailRegex, passwordRegex, Role } from "../../../../Utils";
 
 const useStyles = makeStyles({
@@ -154,7 +155,7 @@ export const RegistrationForm = () => {
         });
     };
 
-    const {isError} = useAppSelector(authState);
+    const {token, email, isError} = useAppSelector(authState);
 
     const signUp = () => {
         if (role === Role.player) {
@@ -191,6 +192,7 @@ export const RegistrationForm = () => {
                 handleOpen();
                 return;
             }
+            dispatch(userProfileAsync({token: token, email: email}));
             navigate(`/profile`);
         }
     }

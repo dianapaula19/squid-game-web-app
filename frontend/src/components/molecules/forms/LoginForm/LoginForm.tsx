@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../app/hooks";
 import { authState, ILoginRequest, loginAsync } from "../../../../features/auth/authSlice";
+import { userProfileAsync } from "../../../../features/user/userSlice";
 import { emailRegex, passwordRegex } from "../../../../Utils";
 
 const useStyles = makeStyles({
@@ -44,7 +45,7 @@ export const LoginForm = () => {
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
-    const {isError} = useAppSelector(authState);
+    const {token, email, isError} = useAppSelector(authState);
 
     const [formData, setFormData] = useState<ILoginRequest>({
         Email: '',
@@ -86,6 +87,7 @@ export const LoginForm = () => {
             handleOpen();
             return;
         }
+        dispatch(userProfileAsync({token: token, email: email}));
         navigate("/profile");
     }
 

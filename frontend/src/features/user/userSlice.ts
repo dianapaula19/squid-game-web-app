@@ -1,13 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { API_USER_URL } from "../../Utils";
+import { RootState } from "../../app/store";
+import { API_USER_URL, GuardRole } from "../../Utils";
 
 export interface IUserState {
     isLoading: boolean;
     isSuccess: boolean;
     isError: boolean;
+    username: string | null;
     country: string | null;
-    type?: string | null;
+    type?: GuardRole | null;
     firstName?: string | null;
     lastName?: string | null;
     gender?: string | null;    
@@ -17,6 +19,7 @@ const initialState: IUserState = {
     isLoading: false,
     isSuccess: false,
     isError: false,
+    username: null,
     country: null,
     type: null,
     firstName: null,
@@ -39,7 +42,7 @@ export interface ApplicationUserProfileResponse {
 
 export interface UserProfileResponse {
     applicationUserProfile: ApplicationUserProfileResponse;
-    type?: string;
+    type?: GuardRole;
     firstName?: string;
     lastName?: string;
     gender?: string;
@@ -100,7 +103,9 @@ export const userSlice = createSlice({
 });
 
 const { reducer } = userSlice;
+const userState = (state: RootState) => state.user;
 
 export {
+    userState,
     reducer as userReducer
 }

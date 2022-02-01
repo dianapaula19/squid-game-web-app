@@ -1,20 +1,39 @@
-import { Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { useAppSelector } from "../../../app/hooks";
 import { authState } from "../../../features/auth/authSlice";
-import { userProfileAsync } from "../../../features/user/userSlice";
-import { Role } from "../../../Utils";
+import { userState } from "../../../features/user/userSlice";
+import { guardMessage, GuardRole, Role } from "../../../Utils";
 
 export interface IProps {
     role: Role;
 }
 
+export interface IUserData {
+    username: string | null;
+    country: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    gender?: string | null;
+    type?: GuardRole | null;
+}
+
+
 export const ProfilePage = ({role}: IProps) => {
-    const {token, email} = useSelector(authState);
+    const { email } = useSelector(authState);
 
-    const dispatch = useDispatch();
+    const { 
+        username, 
+        country, 
+        firstName, 
+        lastName, 
+        gender, 
+        type, 
+        isSuccess
+    } = useAppSelector(userState);
 
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState<IUserData | null>(null);
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -30,14 +49,41 @@ export const ProfilePage = ({role}: IProps) => {
     };
 
     useEffect(() => {
-        if (userData === null) {
-            dispatch(userProfileAsync({token: token, email: email}));
+        if (userData === null && isSuccess) {
+            switch (role) {
+                case Role.player:
+                    setUserData({
+                        username: username,
+                        country: country,
+                        firstName: firstName,
+                        lastName: lastName,
+                        gender: gender
+                    });    
+                    break;
+                case Role.guard:
+                    setUserData({
+                        username: username,
+                        country: country,
+                        type: type
+                    });
+                    break;
+                default:
+                    setUserData({
+                        username: username,
+                        country: country
+                    });
+                    break;
+            }
         }
-    }, []);
-    
+    }, [userData, isSuccess, role, username, country, firstName, lastName, gender, type]);
 
     return(
         <Box>
+            <Typography
+                gutterBottom
+            >
+                Email: {email}
+            </Typography>
             {
                 role === Role.player && (
                     <Box>
@@ -46,6 +92,7 @@ export const ProfilePage = ({role}: IProps) => {
                             label={"First Name"}
                             variant="outlined"
                             onChange={handleChange}
+                            defaultValue={userData?.firstName !== null ? userData?.firstName : "An error has occured"}
                             required
                             fullWidth
                         />
@@ -54,22 +101,19 @@ export const ProfilePage = ({role}: IProps) => {
                             label={"Last Name"}
                             variant="outlined"
                             onChange={handleChange}
+                            defaultValue={userData?.lastName !== null ? userData?.lastName : "An error has occured"}
                             required
                             fullWidth
                         />
-                        <FormControl>
-                            <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
-                                <RadioGroup
-                                    aria-labelledby="gender-radio-buttons-group-label"
-                                    defaultValue="female"
-                                    name="gender"
-                                    onChange={handleChange}
-                                >
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="unspecified" control={<Radio />} label="I'd rather not say" />
-                                </RadioGroup>
-                        </FormControl>
+                        <TextField
+                            name={"gender"}
+                            label={"Gender"}
+                            variant="outlined"
+                            onChange={handleChange}
+                            defaultValue={userData?.gender !== null ? userData?.gender : "An error has occured"}
+                            disabled
+                            fullWidth
+                        />
                         <Button>
 
                         </Button>
@@ -82,20 +126,20 @@ export const ProfilePage = ({role}: IProps) => {
                         <Typography
                             gutterBottom
                         >
+                        {
+                            (userData?.type !== null && userData?.type !== undefined) ? guardMessage(userData?.type) : "An error has occured"
+                        }
                         </Typography>
                     </Box>       
                 )
             }
             {
                 role === Role.frontman && (
-                    <Box>
-                        
-                    </Box>       
+                    <Typography>
+                        You are a FrontMan from {userData?.country}
+                    </Typography>       
                 )
             }
-            <Typography>
-                {email}
-            </Typography>
             <Button
                 variant="outlined"
                 color="error"
