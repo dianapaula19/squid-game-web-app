@@ -47,7 +47,12 @@ namespace backend
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DatabaseContext")));
             
-            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+            // Set with `dotnet user-secrets set "JwtConfig:Secret" "<32+ random characters>"`
+            // or the JwtConfig__Secret environment variable; never commit it.
+            var secret = Configuration["JwtConfig:Secret"];
+            if (string.IsNullOrEmpty(secret))
+                throw new InvalidOperationException("JwtConfig:Secret is not configured (see README).");
+            var key = Encoding.ASCII.GetBytes(secret);
 
             var tokenValidationParams = new TokenValidationParameters {
                 ValidateIssuerSigningKey = true,
